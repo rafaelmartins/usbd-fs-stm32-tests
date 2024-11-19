@@ -1,6 +1,10 @@
 # SPDX-FileCopyrightText: 2024 Rafael G. Martins <rafael@rafaelmartins.eng.br>
 # SPDX-License-Identifier: BSD-3-Clause
 
+cmake_minimum_required(VERSION 3.22)
+
+project(usbd-fs-stm32-tests C)
+
 find_package(PkgConfig)
 
 pkg_check_modules(LIBUSB REQUIRED IMPORTED_TARGET libusb-1.0)
