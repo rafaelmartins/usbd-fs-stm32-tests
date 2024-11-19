@@ -16,3 +16,9 @@ target_link_libraries(runner PRIVATE
     PkgConfig::LIBUSB
     PkgConfig::STLINK
 )
+
+target_compile_options(runner PRIVATE
+    -Wall
+    -Wextra
+    -Werror
+)

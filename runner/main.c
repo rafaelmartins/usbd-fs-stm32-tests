@@ -10,12 +10,15 @@
 int
 main(int argc, char **argv)
 {
+    (void) argc;
+    (void) argv;
+
     stlink_t **devices;
     uint8_t failures = 0;
     uint8_t total = 0;
     uint32_t n = stlink_probe_usb(&devices, CONNECT_NORMAL, 24000);
 
-    for (uint8_t i; i < n; i++) {
+    for (uint8_t i = 0; i < n; i++) {
         mcu_id_t mcu = mcu_get_from_chip_id(devices[i]->chip_id);
         if (mcu >= __MCU_COUNT)
             continue;

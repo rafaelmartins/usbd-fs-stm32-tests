@@ -10,5 +10,7 @@
 bool
 run_tests_for_mcu(stlink_t *stl, mcu_id_t mcu)
 {
+    (void) stl;
+    (void) mcu;
     return false;
 }
