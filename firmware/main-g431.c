@@ -3,8 +3,18 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+/*
+ * This code runs on a NUCLEO-G431KB with the following solder bridge changes:
+ *
+ * - SB1 open
+ * - SB9 closed
+ * - SB10 closed
+ * - SB12 open
+ * - SB14 closed
+ */
+
 #include <stm32g4xx.h>
-#include "test.h"
+#include <test-helpers.h>
 
 #define clock_frequency 170000000
 
@@ -22,6 +32,9 @@ clock_init(void)
 
     RCC->CR |= RCC_CR_HSION;
     while ((RCC->CR & RCC_CR_HSIRDY) != RCC_CR_HSIRDY);
+
+    RCC->CRRCR |= RCC_CRRCR_HSI48ON;
+    while ((RCC->CRRCR & RCC_CRRCR_HSI48RDY) != RCC_CRRCR_HSI48RDY);
 
     // pll configuration (RM0440 section 7.4.4)
     //      f(PLL_R) = F(HSE/HSI) * PLLN / (PLLM * PLLR)

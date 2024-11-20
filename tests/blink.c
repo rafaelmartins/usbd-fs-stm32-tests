@@ -4,7 +4,7 @@
  */
 
 #include <stdbool.h>
-#include "../test.h"
+#include <test-helpers.h>
 
 void
 SysTick_Handler(void)

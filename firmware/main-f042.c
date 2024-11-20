@@ -3,8 +3,14 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+/*
+ * This code runs on a NUCLEO-F042K6 with the following solder bridge changes:
+ *
+ * - SB2 open
+ */
+
 #include <stm32f0xx.h>
-#include "test.h"
+#include <test-helpers.h>
 
 #define clock_frequency 48000000
 
