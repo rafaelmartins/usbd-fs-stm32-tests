@@ -3,16 +3,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-/*
- * This code runs on a NUCLEO-G431KB with the following solder bridge changes:
- *
- * - SB1 open
- * - SB9 closed
- * - SB10 closed
- * - SB12 open
- * - SB14 closed
- */
-
 #include <stm32g4xx.h>
 #include <test-helpers.h>
 
@@ -77,8 +67,8 @@ main(void)
 
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN;
 
-    GPIOA->MODER &= ~(GPIO_MODER_MODE0 | GPIO_MODER_MODE1 | GPIO_MODER_MODE2 | GPIO_MODER_MODE3);
-    GPIOA->MODER |= GPIO_MODER_MODE0_0 | GPIO_MODER_MODE1_0 | GPIO_MODER_MODE2_0 | GPIO_MODER_MODE3_0;
+    GPIOA->MODER &= ~(GPIO_MODER_MODE1 | GPIO_MODER_MODE4 | GPIO_MODER_MODE7 | GPIO_MODER_MODE8);
+    GPIOA->MODER |= GPIO_MODER_MODE1_0 | GPIO_MODER_MODE4_0 | GPIO_MODER_MODE7_0 | GPIO_MODER_MODE8_0;
 
     GPIOB->MODER &= ~GPIO_MODER_MODE8;
     GPIOB->MODER |= GPIO_MODER_MODE8_0;
