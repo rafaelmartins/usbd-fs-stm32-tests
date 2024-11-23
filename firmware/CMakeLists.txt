@@ -7,7 +7,7 @@ include(FetchContent)
 
 FetchContent_Declare(cmake_cmsis_stm32
     GIT_REPOSITORY https://github.com/rafaelmartins/cmake-cmsis-stm32.git
-    GIT_TAG 7e5ec681b2d0c06bc529702681ff021e1df1d21a
+    GIT_TAG c199670047e5adb373d8a033ece58c34f173ad4b
 )
 FetchContent_MakeAvailable(
     cmake_cmsis_stm32
@@ -32,11 +32,12 @@ set(device_map
 
 file(GLOB test_sources
     LIST_DIRECTORIES false
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/*-firmware.c
 )
 
 foreach(test_source ${test_sources})
     get_filename_component(test ${test_source} NAME_WE)
+    string(REGEX REPLACE "^(.+)-firmware$" "\\1" test ${test})
 
     foreach(device_definition ${device_map})
         string(SUBSTRING ${device_definition} 5 4 device_family)
@@ -78,12 +79,10 @@ foreach(test_source ${test_sources})
 
         cmsis_stm32_target(test-${test}-${device_family}
             DEVICE ${device_definition}
-            VERSION 20240709193138
+            VERSION 20241122015203
             LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/${device_definition}.ld
-            ADDITIONAL_OUTPUTS IHEX BIN DFU
             SHOW_SIZE ON
             STLINK ON
-            #INSTALL ON
         )
     endforeach()
 endforeach()
