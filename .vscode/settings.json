@@ -1,6 +1,5 @@
 {
     "cmake.sourceDirectory": [
-        "${workspaceFolder}/runner",
         "${workspaceFolder}/firmware"
     ],
     "cmake.buildDirectory": "${sourceDirectory}/build"

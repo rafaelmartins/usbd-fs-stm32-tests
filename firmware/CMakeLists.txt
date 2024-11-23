@@ -32,12 +32,11 @@ set(device_map
 
 file(GLOB test_sources
     LIST_DIRECTORIES false
-    ${CMAKE_CURRENT_SOURCE_DIR}/../tests/*-firmware.c
+    tests/*.c
 )
 
 foreach(test_source ${test_sources})
     get_filename_component(test ${test_source} NAME_WE)
-    string(REGEX REPLACE "^(.+)-firmware$" "\\1" test ${test})
 
     foreach(device_definition ${device_map})
         string(SUBSTRING ${device_definition} 5 4 device_family)

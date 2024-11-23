@@ -45,3 +45,5 @@ fp-info-cache
 
 # FreeCAD
 *.FCStd[0-9]*
+
+*/runner
