@@ -4,14 +4,16 @@
  */
 
 #include <stdbool.h>
-#include <test-helpers.h>
+#include <hal.h>
 
 void
 SysTick_Handler(void)
 {
     static int counter = 0;
-    if ((++counter % 1000) == 0)
-        leds_toggle(LED1 | LED2 | LED3 | LED4);
+    if ((++counter % 1000) == 0) {
+        test_leds_toggle(TEST_LED1 | TEST_LED2 | TEST_LED3 | TEST_LED4);
+        board_led_toggle();
+    }
 }
 
 

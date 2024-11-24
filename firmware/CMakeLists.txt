@@ -43,7 +43,7 @@ foreach(test_source ${test_sources})
         string(TOLOWER ${device_family} device_family)
 
         add_executable(test-${test}-${device_family}
-            main-${device_family}.c
+            main.c
             ${test_source}
         )
 
