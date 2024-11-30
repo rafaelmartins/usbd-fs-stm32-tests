@@ -60,6 +60,7 @@ foreach(test_source ${test_sources})
 
         target_include_directories(test-${test}-${device_family} PRIVATE
             include
+            ../common
         )
 
         target_link_libraries(test-${test}-${device_family} PRIVATE

@@ -5,6 +5,10 @@
 
 #include <stdbool.h>
 #include <hal.h>
+#include <test.h>
+
+uint8_t test_count = 2;
+
 
 void
 SysTick_Handler(void)
@@ -17,9 +21,16 @@ SysTick_Handler(void)
 }
 
 
+bool
+test_configure(uint8_t test_id)
+{
+    (void) test_id;
+    return true;
+}
+
+
 void
-test(void)
+test_init(void)
 {
     SysTick_Config(SystemCoreClock / 1000);
-    while (true);
 }

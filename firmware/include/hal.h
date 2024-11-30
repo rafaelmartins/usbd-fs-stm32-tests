@@ -10,10 +10,18 @@
 
 #define GPIO_RCC AHBENR
 
-#define _GPIO_BSRR_BS(idx)      GPIO_BSRR_BS_ ## idx
-#define _GPIO_BSRR_BR(idx)      GPIO_BSRR_BR_ ## idx
-#define _GPIO_MODER_MASK(idx)   GPIO_MODER_MODER ## idx
-#define _GPIO_MODER_OUTPUT(idx) GPIO_MODER_MODER ## idx ## _0
+#define _GPIO_BSRR_BS(idx)          GPIO_BSRR_BS_ ## idx
+#define _GPIO_BSRR_BR(idx)          GPIO_BSRR_BR_ ## idx
+#define _GPIO_MODER_MASK(idx)       GPIO_MODER_MODER ## idx
+#define _GPIO_MODER_OUTPUT(idx)     GPIO_MODER_MODER ## idx ## _0
+#define _GPIO_MODER_ALTERNATE(idx)  GPIO_MODER_MODER ## idx ## _1
+#define _GPIO_OTYPER_OT(idx)        GPIO_OTYPER_OT_ ## idx
+#define _GPIO_PUPDR_PUPD_MASK(idx)  GPIO_PUPDR_PUPDR ## idx
+#define _GPIO_PUPDR_PUPD_UP(idx)    GPIO_PUPDR_PUPDR ## idx ## _0
+#define _GPIO_AFRH_AFSEL_MASK(idx)  GPIO_AFRH_AFSEL ## idx
+#define _GPIO_AFRH_AFSEL_USART(idx) (0b1 << GPIO_AFRH_AFSEL ## idx ## _Pos)
+#define _GPIO_AFRL_AFSEL_MASK(idx)  GPIO_AFRL_AFSEL ## idx
+#define _GPIO_AFRL_AFSEL_USART(idx) (0b1 << GPIO_AFRL_AFSEL ## idx ## _Pos)
 
 #define BOARD_LED_BLK B
 #define BOARD_LED_IDX 3
@@ -24,8 +32,19 @@
 #define TEST_LED3_IDX 7
 #define TEST_LED4_IDX 8
 
+#define USART_RCC APB1ENR
+
+#define USART_BLK        A
+#define USART_IDX        2
+#define USART_TX_IDX     2
+#define USART_TX_AFR_IDX 0
+#define USART_TX_AFR_REG L
+#define USART_RX_IDX     15
+#define USART_RX_AFR_IDX 1
+#define USART_RX_AFR_REG H
+
 static inline void
-main_clock_init(void)
+hal_clock_init(void)
 {
     // 1 flash wait cycle required to operate @ 48MHz (RM0091 section 3.5.1)
     FLASH->ACR &= ~FLASH_ACR_LATENCY;
@@ -47,10 +66,18 @@ main_clock_init(void)
 
 #define GPIO_RCC AHB2ENR
 
-#define _GPIO_BSRR_BS(idx)      GPIO_BSRR_BS ## idx
-#define _GPIO_BSRR_BR(idx)      GPIO_BSRR_BR ## idx
-#define _GPIO_MODER_MASK(idx)   GPIO_MODER_MODE ## idx
-#define _GPIO_MODER_OUTPUT(idx) GPIO_MODER_MODE ## idx ## _0
+#define _GPIO_BSRR_BS(idx)          GPIO_BSRR_BS ## idx
+#define _GPIO_BSRR_BR(idx)          GPIO_BSRR_BR ## idx
+#define _GPIO_MODER_MASK(idx)       GPIO_MODER_MODE ## idx
+#define _GPIO_MODER_OUTPUT(idx)     GPIO_MODER_MODE ## idx ## _0
+#define _GPIO_MODER_ALTERNATE(idx)  GPIO_MODER_MODE ## idx ## _1
+#define _GPIO_OTYPER_OT(idx)        GPIO_OTYPER_OT ## idx
+#define _GPIO_PUPDR_PUPD_MASK(idx)  GPIO_PUPDR_PUPD ## idx
+#define _GPIO_PUPDR_PUPD_UP(idx)    GPIO_PUPDR_PUPD ## idx ## _0
+#define _GPIO_AFRH_AFSEL_MASK(idx)  GPIO_AFRH_AFSEL ## idx
+#define _GPIO_AFRH_AFSEL_USART(idx) (GPIO_AFRH_AFSEL ## idx ## _0 | GPIO_AFRH_AFSEL ## idx ## _1 | GPIO_AFRH_AFSEL ## idx ## _2)
+#define _GPIO_AFRL_AFSEL_MASK(idx)  GPIO_AFRL_AFSEL ## idx
+#define _GPIO_AFRL_AFSEL_USART(idx) (GPIO_AFRL_AFSEL ## idx ## _0 | GPIO_AFRL_AFSEL ## idx ## _1 | GPIO_AFRL_AFSEL ## idx ## _2)
 
 #define BOARD_LED_BLK B
 #define BOARD_LED_IDX 8
@@ -61,8 +88,19 @@ main_clock_init(void)
 #define TEST_LED3_IDX 7
 #define TEST_LED4_IDX 8
 
+#define USART_RCC APB1ENR1
+
+#define USART_BLK        A
+#define USART_IDX        2
+#define USART_TX_IDX     2
+#define USART_TX_AFR_IDX 0
+#define USART_TX_AFR_REG L
+#define USART_RX_IDX     3
+#define USART_RX_AFR_IDX 0
+#define USART_RX_AFR_REG L
+
 static inline void
-main_clock_init(void)
+hal_clock_init(void)
 {
     // 4 flash wait cycles required to operate @ 170MHz (RM0440 section 5.3.3 table 29)
     FLASH->ACR &= ~FLASH_ACR_LATENCY;
@@ -115,23 +153,39 @@ main_clock_init(void)
 #error "Unsupported microcontroller."
 #endif
 
-#define _GPIO_RCC_EN(reg, block) RCC_ ## reg ## _GPIO ## block ## EN
-#define GPIO_RCC_EN(reg, block)  _GPIO_RCC_EN(reg, block)
-#define _GPIO_REG(block)         GPIO ## block
-#define GPIO_REG(block)          _GPIO_REG(block)
-#define GPIO_BSRR_BS(idx)        _GPIO_BSRR_BS(idx)
-#define GPIO_BSRR_BR(idx)        _GPIO_BSRR_BR(idx)
-#define GPIO_MODER_MASK(idx)     _GPIO_MODER_MASK(idx)
-#define GPIO_MODER_OUTPUT(idx)   _GPIO_MODER_OUTPUT(idx)
+#define _GPIO_RCC_EN(reg, block)          RCC_ ## reg ## _GPIO ## block ## EN
+#define GPIO_RCC_EN(reg, block)           _GPIO_RCC_EN(reg, block)
+#define _GPIO_REG(block)                  GPIO ## block
+#define GPIO_REG(block)                   _GPIO_REG(block)
+#define GPIO_BSRR_BS(idx)                 _GPIO_BSRR_BS(idx)
+#define GPIO_BSRR_BR(idx)                 _GPIO_BSRR_BR(idx)
+#define GPIO_MODER_MASK(idx)              _GPIO_MODER_MASK(idx)
+#define GPIO_MODER_OUTPUT(idx)            _GPIO_MODER_OUTPUT(idx)
+#define GPIO_MODER_ALTERNATE(idx)         _GPIO_MODER_ALTERNATE(idx)
+#define GPIO_OTYPER_OT(idx)               _GPIO_OTYPER_OT(idx)
+#define GPIO_PUPDR_PUPD_MASK(idx)         _GPIO_PUPDR_PUPD_MASK(idx)
+#define GPIO_PUPDR_PUPD_UP(idx)           _GPIO_PUPDR_PUPD_UP(idx)
+#define _GPIO_AFR_AFSEL_MASK(block, idx)  _GPIO_AFR ## block ## _AFSEL_MASK(idx)
+#define GPIO_AFR_AFSEL_MASK(block, idx)   _GPIO_AFR_AFSEL_MASK(block, idx)
+#define _GPIO_AFR_AFSEL_USART(block, idx) _GPIO_AFR ## block ## _AFSEL_USART(idx)
+#define GPIO_AFR_AFSEL_USART(block, idx)  _GPIO_AFR_AFSEL_USART(block, idx)
 
-#define BOARD_LED_REG GPIO_REG(BOARD_LED_BLK)
-#define TEST_LEDS_REG GPIO_REG(TEST_LEDS_BLK)
+#define _USART_RCC_EN(reg, idx) RCC_ ## reg ## _USART ## idx ## EN
+#define USART_RCC_EN(reg, idx)  _USART_RCC_EN(reg, idx)
+#define __USART_REG(idx)        USART ## idx
+#define _USART_REG(idx)         __USART_REG(idx)
+#define USART_REG               _USART_REG(USART_IDX)
+
+#define BOARD_LED_REG  GPIO_REG(BOARD_LED_BLK)
+#define TEST_LEDS_REG  GPIO_REG(TEST_LEDS_BLK)
+#define USART_GPIO_REG GPIO_REG(USART_BLK)
 
 #define _TEST_LED(idx) _GPIO_BSRR_BS(idx)
 #define TEST_LED1      _TEST_LED(TEST_LED1_IDX)
 #define TEST_LED2      _TEST_LED(TEST_LED2_IDX)
 #define TEST_LED3      _TEST_LED(TEST_LED3_IDX)
 #define TEST_LED4      _TEST_LED(TEST_LED4_IDX)
+#define TEST_LEDS      (TEST_LED1 | TEST_LED2 | TEST_LED3 | TEST_LED4)
 
 #define board_led_set()     { BOARD_LED_REG->BSRR = GPIO_BSRR_BS(BOARD_LED_IDX); }
 #define board_led_reset()   { BOARD_LED_REG->BSRR = GPIO_BSRR_BR(BOARD_LED_IDX); }
@@ -142,5 +196,3 @@ main_clock_init(void)
 #define test_leds_reset(l)  { TEST_LEDS_REG->BRR  = (l); }
 #define test_leds_toggle(l) { TEST_LEDS_REG->BSRR = (((TEST_LEDS_REG->ODR  & (l)) << 16) | \
                                                     (~(TEST_LEDS_REG->ODR) & (l))); }
-
-void test(void);
