@@ -89,7 +89,7 @@ func (s *Serial) ConfigureTest(testID byte) error {
 	case C.PROTO_REPLY_CONFIGURE_TEST_OK:
 		return nil
 	case C.PROTO_REPLY_CONFIGURE_TEST_INVALID_ID:
-		return fmt.Errorf("serial: failed to configure test: invalid id: %#x", testID)
+		return fmt.Errorf("serial: failed to configure test: invalid id: %d", testID)
 	case C.PROTO_REPLY_CONFIGURE_TEST_FAILED:
 		return fmt.Errorf("serial: failed to configure test")
 	default:
@@ -99,6 +99,22 @@ func (s *Serial) ConfigureTest(testID byte) error {
 
 func (s *Serial) GetTestCount() (byte, error) {
 	return s.sendCommand(C.PROTO_CMD_GET_TEST_COUNT, 0)
+}
+
+func (s *Serial) GetTestResult() error {
+	val, err := s.sendCommand(C.PROTO_CMD_GET_TEST_RESULT, 0)
+	if err != nil {
+		return err
+	}
+
+	switch val {
+	case C.PROTO_REPLY_GET_TEST_RESULT_PASSED:
+		return nil
+	case C.PROTO_REPLY_GET_TEST_RESULT_FAILED:
+		return fmt.Errorf("serial: test failed")
+	default:
+		return fmt.Errorf("serial: failed to get test result: unknown error: %#x", val)
+	}
 }
 
 func (s *Serial) Sync() error {

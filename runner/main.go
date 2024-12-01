@@ -14,15 +14,10 @@ import (
 )
 
 func runDevice(dev *stlink.Stlink, testdir string) error {
-	if err := dev.Open(); err != nil {
-		return err
-	}
-	defer dev.Close()
-
-	family, err := dev.Family()
-	if err != nil {
-		return err
-	}
+	defer func() {
+		fmt.Fprintf(os.Stderr, "==> Halting ...\n")
+		dev.Halt()
+	}()
 
 	s, err := serial.New(dev.Serial)
 	if err != nil {
@@ -30,8 +25,9 @@ func runDevice(dev *stlink.Stlink, testdir string) error {
 	}
 	defer s.Close()
 
+	failures := []string{}
 	for testName, cbs := range tests.Tests {
-		firmwareName := "test-" + testName + "-" + family + ".hex"
+		firmwareName := "test-" + testName + "-" + dev.Family + ".hex"
 		firmware := filepath.Join(testdir, firmwareName)
 		if _, err := os.Stat(firmware); err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
@@ -58,15 +54,32 @@ func runDevice(dev *stlink.Stlink, testdir string) error {
 			return fmt.Errorf("runner: number of tests implemented in firmware differs from tests implemented in runner: %d != %d", len(cbs), cnt)
 		}
 
+		tfailures := []int{}
 		for i, cb := range cbs {
-			fmt.Fprintf(os.Stderr, "==> Test: %d\n", i+1)
+			fmt.Fprintf(os.Stderr, "\n==> Test: %s[%d]\n", testName, i+1)
 			if err := s.ConfigureTest(byte(i + 1)); err != nil {
 				return err
 			}
 			if err := cb(byte(i + 1)); err != nil {
 				return err
 			}
+			if err := s.GetTestResult(); err != nil {
+				tfailures = append(tfailures, i+1)
+				fmt.Fprintf(os.Stderr, "<== FAILED\n")
+			} else {
+				fmt.Fprintf(os.Stderr, "<== PASSED\n")
+			}
 		}
+		if len(tfailures) > 0 {
+			failures = append(failures, testName)
+			fmt.Fprintf(os.Stderr, "\n[FAILED]: %+v\n\n", tfailures)
+		} else {
+			fmt.Fprintf(os.Stderr, "\n[PASSED]\n\n")
+		}
+	}
+
+	if len(failures) > 0 {
+		return fmt.Errorf("%q", failures)
 	}
 	return nil
 }

@@ -24,7 +24,8 @@ SysTick_Handler(void)
 bool
 test_configure(uint8_t test_id)
 {
-    (void) test_id;
+    if (test_id == 1)
+        test_fail();
     return true;
 }
 

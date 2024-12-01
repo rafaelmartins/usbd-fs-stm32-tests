@@ -15,6 +15,14 @@
 #endif
 
 extern uint8_t test_count;
+static serial_proto_reply_get_test_result_t test_result = PROTO_REPLY_GET_TEST_RESULT_PASSED;
+
+
+void
+test_fail(void)
+{
+    test_result = PROTO_REPLY_GET_TEST_RESULT_FAILED;
+}
 
 
 static inline void
@@ -77,12 +85,17 @@ main(void)
                     serial_send_byte(cmd | PROTO_REPLY_CONFIGURE_TEST_INVALID_ID);
                     break;
                 }
+                test_result = PROTO_REPLY_GET_TEST_RESULT_PASSED;
                 serial_send_byte(cmd | (test_configure(val) ?
                     PROTO_REPLY_CONFIGURE_TEST_OK : PROTO_REPLY_CONFIGURE_TEST_FAILED));
                 break;
 
             case PROTO_CMD_GET_TEST_COUNT:
                 serial_send_byte(cmd | (test_count & 0x0f));
+                break;
+
+            case PROTO_CMD_GET_TEST_RESULT:
+                serial_send_byte(cmd | test_result);
                 break;
 
             case PROTO_CMD_SYNC:
